@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="183d8bd1-16da-4de8-876f-e3a3f92b09bb" name="更改" comment="Backend Image Upload Module Completed">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Xjzai1-picture-backend/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/Xjzai1-picture-backend/src/main/resources/application.properties" afterDir="false" />
-    </list>
+    <list default="true" id="183d8bd1-16da-4de8-876f-e3a3f92b09bb" name="更改" comment="Image Moderation Module Completed" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -84,6 +81,7 @@
       <workItem from="1773573195839" duration="205000" />
       <workItem from="1773735256284" duration="149000" />
       <workItem from="1773740814840" duration="1640000" />
+      <workItem from="1773843054083" duration="559000" />
     </task>
     <task id="LOCAL-00001" summary="Finished the backend login and registration APIs">
       <option name="closed" value="true" />
@@ -125,7 +123,15 @@
       <option name="project" value="LOCAL" />
       <updated>1773507597515</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Image Moderation Module Completed">
+      <option name="closed" value="true" />
+      <created>1773843163060</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1773843163060</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -147,6 +153,7 @@
     <MESSAGE value="Backend User Module Completed" />
     <MESSAGE value="Frontend User Module Completed" />
     <MESSAGE value="Backend Image Upload Module Completed" />
-    <option name="LAST_COMMIT_MESSAGE" value="Backend Image Upload Module Completed" />
+    <MESSAGE value="Image Moderation Module Completed" />
+    <option name="LAST_COMMIT_MESSAGE" value="Image Moderation Module Completed" />
   </component>
 </project>
