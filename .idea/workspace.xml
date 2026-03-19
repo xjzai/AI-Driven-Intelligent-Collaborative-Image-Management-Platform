@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="183d8bd1-16da-4de8-876f-e3a3f92b09bb" name="更改" comment="Image Moderation Module Completed" />
+    <list default="true" id="183d8bd1-16da-4de8-876f-e3a3f92b09bb" name="更改" comment="Fixed Bulk URL Image Upload Bug" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -82,6 +82,7 @@
       <workItem from="1773735256284" duration="149000" />
       <workItem from="1773740814840" duration="1640000" />
       <workItem from="1773843054083" duration="559000" />
+      <workItem from="1773845375777" duration="601000" />
     </task>
     <task id="LOCAL-00001" summary="Finished the backend login and registration APIs">
       <option name="closed" value="true" />
@@ -131,7 +132,23 @@
       <option name="project" value="LOCAL" />
       <updated>1773843163060</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Added Bulk URL Image Upload Feature">
+      <option name="closed" value="true" />
+      <created>1773845567319</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1773845567319</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Fixed Bulk URL Image Upload Bug">
+      <option name="closed" value="true" />
+      <created>1773845911297</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1773845911297</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -154,6 +171,8 @@
     <MESSAGE value="Frontend User Module Completed" />
     <MESSAGE value="Backend Image Upload Module Completed" />
     <MESSAGE value="Image Moderation Module Completed" />
-    <option name="LAST_COMMIT_MESSAGE" value="Image Moderation Module Completed" />
+    <MESSAGE value="Added Bulk URL Image Upload Feature" />
+    <MESSAGE value="Fixed Bulk URL Image Upload Bug" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed Bulk URL Image Upload Bug" />
   </component>
 </project>
