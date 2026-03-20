@@ -46,7 +46,8 @@
                 <img
                   style="height: 180px; object-fit: cover"
                   :alt="picture.name"
-                  :src="picture.url"
+                  :src="picture.thumbnailUrl ?? picture.url"
+                  loading="lazy"
                 />
               </template>
               <a-card-meta :title="picture.name">
@@ -74,7 +75,7 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import {
   listPictureTagCategoryUsingGet,
-  listPictureVoByPageUsingPost,
+  listPictureVoByPageWithCacheUsingPost,
 } from '@/api/pictureController'
 import { message } from 'ant-design-vue'
 import { useRouter } from 'vue-router'
@@ -123,7 +124,7 @@ const fetchData = async () => {
     }
   })
   console.log(params)
-  const res = await listPictureVoByPageUsingPost(params)
+  const res = await listPictureVoByPageWithCacheUsingPost(params)
   if (res.data.data) {
     dataList.value = res.data.data.records ?? []
     total.value = res.data.data.total ?? 0
