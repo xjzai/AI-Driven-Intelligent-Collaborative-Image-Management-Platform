@@ -5,15 +5,12 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xjzai1.xjzai1picturebackend.model.domain.Picture;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.xjzai1.xjzai1picturebackend.model.domain.User;
-import com.xjzai1.xjzai1picturebackend.model.dto.picture.PictureQueryRequest;
-import com.xjzai1.xjzai1picturebackend.model.dto.picture.PictureReviewRequest;
-import com.xjzai1.xjzai1picturebackend.model.dto.picture.PictureUploadByBatchRequest;
-import com.xjzai1.xjzai1picturebackend.model.dto.picture.PictureUploadRequest;
+import com.xjzai1.xjzai1picturebackend.model.dto.picture.*;
 import com.xjzai1.xjzai1picturebackend.model.vo.PictureVo;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * @author Administrator
@@ -64,6 +61,14 @@ public interface PictureService extends IService<Picture> {
 
     Page<PictureVo> getPictureVoPage(Page<Picture> picturePage, HttpServletRequest request);
 
+    boolean deletePicture(Long pictureId, User loginUser);
+
+    // todo 批量删除感觉有些问题，日后完善，桶内有残余未删除，可以先根据id从桶内查询全部图片再删除。
+    boolean deletePictures(List<Picture> pictureList, User loginUser);
+
+
+    void editPicture(PictureEditRequest pictureEditRequest, User loginUser);
+
     void validPicture(Picture picture);
 
     /**
@@ -76,6 +81,11 @@ public interface PictureService extends IService<Picture> {
 
     void fillReviewParams(Picture picture, User loginUser);
 
-    @Async
+    void checkPictureAuth(User loginUser, Picture picture);
+
+    @Async // 此处使用了异步注解，需要在启动类添加@EnableAsync注解才能生效
     void clearPictureFile(Picture oldPicture);
+
+    // 先不使用异步注解，防止数据库删除了但COS没有
+    void clearPictureFiles(List<Picture> pictureList);
 }
