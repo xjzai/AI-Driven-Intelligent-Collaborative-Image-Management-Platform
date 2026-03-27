@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="183d8bd1-16da-4de8-876f-e3a3f92b09bb" name="更改" comment="Fixed Bulk URL Image Upload Bug" />
+    <list default="true" id="183d8bd1-16da-4de8-876f-e3a3f92b09bb" name="更改" comment="Added Space Analysis Feature">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -22,7 +24,7 @@
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/xjzai/AI-Driven-Intelligent-Collaborative-Image-Management-Platform.git&quot;,
-    &quot;accountId&quot;: &quot;11fa052b-49b2-4836-a530-342ebedb8676&quot;
+    &quot;accountId&quot;: &quot;5cf52301-17bc-45c5-8750-69cfd6dab237&quot;
   }
 }</component>
   <component name="MavenImportPreferences">
@@ -46,21 +48,22 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;E:/Develop/apache-maven-3.9.9&quot;,
+    &quot;last_opened_file_path&quot;: &quot;E:/Develop/Project/Xjzai1Picture&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;application.passwordSafe&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;D:\\develop\\JetBrains\\IntelliJ IDEA 2024.1.7\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-b114ca120d71-intellij.indexing.shared.core-IU-242.20224.419" />
-        <option value="bundled-js-predefined-d6986cc7102b-410509235cf1-JavaScript-IU-242.20224.419" />
+        <option value="bundled-jdk-9f38398b9061-39b83d9b5494-intellij.indexing.shared.core-IU-241.19416.15" />
+        <option value="bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-IU-241.19416.15" />
       </set>
     </attachedChunks>
   </component>
@@ -83,6 +86,10 @@
       <workItem from="1773740814840" duration="1640000" />
       <workItem from="1773843054083" duration="559000" />
       <workItem from="1773845375777" duration="601000" />
+      <workItem from="1774433703630" duration="647000" />
+      <workItem from="1774501013666" duration="72000" />
+      <workItem from="1774511669211" duration="757000" />
+      <workItem from="1774617525682" duration="505000" />
     </task>
     <task id="LOCAL-00001" summary="Finished the backend login and registration APIs">
       <option name="closed" value="true" />
@@ -148,7 +155,15 @@
       <option name="project" value="LOCAL" />
       <updated>1773845911297</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Added Space Analysis Feature">
+      <option name="closed" value="true" />
+      <created>1774434194290</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1774434194290</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -173,6 +188,7 @@
     <MESSAGE value="Image Moderation Module Completed" />
     <MESSAGE value="Added Bulk URL Image Upload Feature" />
     <MESSAGE value="Fixed Bulk URL Image Upload Bug" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed Bulk URL Image Upload Bug" />
+    <MESSAGE value="Added Space Analysis Feature" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added Space Analysis Feature" />
   </component>
 </project>

@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xjzai1.xjzai1picturebackend.constant.UserConstant;
 import com.xjzai1.xjzai1picturebackend.exception.BusinessException;
 import com.xjzai1.xjzai1picturebackend.exception.ErrorCode;
+import com.xjzai1.xjzai1picturebackend.manager.auth.StpKit;
 import com.xjzai1.xjzai1picturebackend.model.domain.User;
 import com.xjzai1.xjzai1picturebackend.model.dto.user.UserQueryRequest;
 import com.xjzai1.xjzai1picturebackend.model.enums.UserRoleEnum;
@@ -41,11 +42,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     private UserMapper userMapper;
 
     @Override
-    public long userRegister(String userAccount, String userPassword, String checkPassword) {
+    public long userRegister(String userAccount, String userName, String userPassword, String checkPassword) {
         // 1.校验参数
         // 参数不能为空
-        if(StrUtil.hasBlank(userAccount, userPassword, checkPassword)){
+        if(StrUtil.hasBlank(userAccount, userName, userPassword, checkPassword)){
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
+        }
+        // 用户名不能大于20个字符
+        if(userName.length() > 20){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户名不能大于20字符");
         }
         // 账号长度不能小于6个字符
         if(userAccount.length() < 6 || userAccount.length() > 16){
@@ -72,7 +77,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         User user = new User();
         user.setUserAccount(userAccount);
         user.setUserPassword(encryptPassword);
-        user.setUserName("匿名用户");
+        user.setUserName(userName);
         user.setUserAvatar("https://huacheng.gz-cmc.com/upload/news/image/2023/05/26/3e67c105f5ac4a38b45a2c7f0a40688f.jpeg");
         boolean result = this.save(user);
         if (!result) {
@@ -109,6 +114,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         }
         // 4.记录用户的登录态
         request.getSession().setAttribute(UserConstant.USER_LOGIN_STATE, user);
+        // 5. 记录用户登录态到 Sa-token，便于空间鉴权时使用，注意保证该用户信息与 SpringSession 中的信息过期时间一致
+        StpKit.SPACE.login(user.getId());
+        StpKit.SPACE.getSession().set(USER_LOGIN_STATE, user);
         return this.getLoginUserVo(user);
     }
 

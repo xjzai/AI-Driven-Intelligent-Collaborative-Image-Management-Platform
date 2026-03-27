@@ -12,6 +12,13 @@ public class SearchPictureByPictureRequest implements Serializable {
      */
     private Long pictureId;
 
+    /**
+     * 空间 id
+     */
+    private Long spaceId;
+
     private static final long serialVersionUID = 1L;
 }
+
+
 
