@@ -1,6 +1,7 @@
 package com.xjzai1.xjzai1picturebackend.controller;
 
 import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -8,10 +9,12 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.xjzai1.xjzai1picturebackend.annotation.AuthCheck;
+import com.xjzai1.xjzai1picturebackend.api.aliyunai.model.AliYunAiApi;
+import com.xjzai1.xjzai1picturebackend.api.aliyunai.model.CreateOutPaintingTaskResponse;
+import com.xjzai1.xjzai1picturebackend.api.aliyunai.model.GetOutPaintingTaskResponse;
 import com.xjzai1.xjzai1picturebackend.api.imagesearch.ImageSearchApiFacade;
 import com.xjzai1.xjzai1picturebackend.api.imagesearch.model.ImageSearchResult;
 import com.xjzai1.xjzai1picturebackend.common.BaseResponse;
-import com.xjzai1.xjzai1picturebackend.common.DeleteRequest;
 import com.xjzai1.xjzai1picturebackend.common.ResultUtils;
 import com.xjzai1.xjzai1picturebackend.constant.UserConstant;
 import com.xjzai1.xjzai1picturebackend.exception.BusinessException;
@@ -31,6 +34,7 @@ import com.xjzai1.xjzai1picturebackend.model.vo.PictureVo;
 import com.xjzai1.xjzai1picturebackend.service.PictureService;
 import com.xjzai1.xjzai1picturebackend.service.SpaceService;
 import com.xjzai1.xjzai1picturebackend.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -46,6 +50,7 @@ import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/picture")
+@Slf4j
 public class PictureController {
 
     @Resource
@@ -62,6 +67,10 @@ public class PictureController {
 
     @Resource
     private SpaceUserAuthManager spaceUserAuthManager;
+
+    @Resource
+    private AliYunAiApi aliYunAiApi;
+
 
     /**
      *  本地缓存
@@ -84,6 +93,7 @@ public class PictureController {
             @RequestPart("file") MultipartFile multipartFile,
             PictureUploadRequest pictureUploadRequest,
             HttpServletRequest request) {
+        log.info("Received data: name={}", pictureUploadRequest.getPictureName()); // 检查是否是中文
         User loginUser = userService.getLoginUser(request);
         PictureVo pictureVo = pictureService.uploadPicture(multipartFile, pictureUploadRequest, loginUser);
         return ResultUtils.success(pictureVo);
@@ -190,7 +200,7 @@ public class PictureController {
         updateWrapper.eq("id", picture.getId()) // 指定主键条件，批量更新则使用 in 传递多条
                 .eq("space_id", spaceId);      // 补充条件 spaceId=xxx
         boolean result = pictureService.update(picture, updateWrapper);
-        ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR, "数据库更新失败");
+        ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR, "Failed to update database");
         return ResultUtils.success(true);
 
     }
@@ -227,7 +237,7 @@ public class PictureController {
         queryWrapper.eq("id", id)         // 根据主键 id 查询
                 .eq("space_id", spaceId); // 附加 spaceId 条件
         Picture picture = pictureService.getOne(queryWrapper);
-        ThrowUtils.throwIf(picture == null, ErrorCode.NOT_FOUND_ERROR, "未找到该数据");
+        ThrowUtils.throwIf(picture == null, ErrorCode.NOT_FOUND_ERROR, "Data not found");
         return ResultUtils.success(picture);
     }
 
@@ -287,7 +297,7 @@ public class PictureController {
             boolean hasPermission = StpKit.SPACE.hasPermission(SpaceUserPermissionConstant.PICTURE_VIEW);
             ThrowUtils.throwIf(!hasPermission, ErrorCode.NO_AUTH);
             space = spaceService.getById(spaceId);
-            ThrowUtils.throwIf(space == null, ErrorCode.NOT_FOUND_ERROR, "空间不存在");
+            ThrowUtils.throwIf(space == null, ErrorCode.NOT_FOUND_ERROR, "Space not found");
             // 已经使用Sa-token进行全局鉴权
 //            User loginUser = userService.getLoginUser(request);
 //            pictureService.checkPictureAuth(loginUser, picture);
@@ -448,12 +458,24 @@ public class PictureController {
     @GetMapping("/tag_category")
     public BaseResponse<PictureTagCategory> listPictureTagCategory() {
         PictureTagCategory pictureTagCategory = new PictureTagCategory();
-        List<String> tagList = Arrays.asList("热门", "搞笑", "生活", "高清", "艺术", "校园", "背景", "简历", "创意");
-        List<String> categoryList = Arrays.asList("模板", "电商", "表情包", "素材", "海报");
+        List<String> tagList = Arrays.asList(
+                "FGO",
+                "Gu Zhen Ren",
+                "Pokemon",
+                "Sanrio",
+                "Dao Gui Yi Xian",
+                "Jobless Reincarnation",
+                "Naruto",
+                "Rilakkuma",
+                "Monster Hunter",
+                "Final Fantasy"
+        );
+        List<String> categoryList = Arrays.asList("Anime", "High Quality", "Meme", "Assets", "Posters", "Other");
         pictureTagCategory.setTagList(tagList);
         pictureTagCategory.setCategoryList(categoryList);
         return ResultUtils.success(pictureTagCategory);
     }
+
 
     @PostMapping("/review")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
@@ -496,6 +518,32 @@ public class PictureController {
         ThrowUtils.throwIf(oldPicture == null, ErrorCode.NOT_FOUND_ERROR);
         List<ImageSearchResult> resultList = ImageSearchApiFacade.searchImage(oldPicture.getOriginalUrl());
         return ResultUtils.success(resultList);
+    }
+
+
+    /**
+     * 创建 AI 扩图任务
+     */
+    @PostMapping("/out_painting/create_task")
+    public BaseResponse<CreateOutPaintingTaskResponse> createPictureOutPaintingTask(
+            @RequestBody CreatePictureOutPaintingTaskRequest createPictureOutPaintingTaskRequest,
+            HttpServletRequest request) {
+        if (createPictureOutPaintingTaskRequest == null || createPictureOutPaintingTaskRequest.getPictureId() == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User loginUser = userService.getLoginUser(request);
+        CreateOutPaintingTaskResponse response = pictureService.createPictureOutPaintingTask(createPictureOutPaintingTaskRequest, loginUser);
+        return ResultUtils.success(response);
+    }
+
+    /**
+     * 查询 AI 扩图任务
+     */
+    @GetMapping("/out_painting/get_task")
+    public BaseResponse<GetOutPaintingTaskResponse> getPictureOutPaintingTask(String taskId) {
+        ThrowUtils.throwIf(StrUtil.isBlank(taskId), ErrorCode.PARAMS_ERROR);
+        GetOutPaintingTaskResponse task = aliYunAiApi.getOutPaintingTask(taskId);
+        return ResultUtils.success(task);
     }
 
 

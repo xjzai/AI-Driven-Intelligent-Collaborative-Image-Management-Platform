@@ -24,7 +24,7 @@
               <template #description>
                 <a-flex>
                   <a-tag color="green">
-                    {{ picture.category ?? '默认' }}
+                    {{ picture.category ?? 'Default' }}
                   </a-tag>
                   <a-tag v-for="tag in picture.tags" :key="tag">
                     {{ tag }}
@@ -101,7 +101,7 @@ const props = withDefaults(defineProps<Props>(), {
 const router = useRouter()
 // todo 添加spaceId
 const doClickPicture = (picture) => {
-  console.log(picture)
+  // console.log(picture)
   router.push({
     path: `/picture/${picture.id}/${picture.spaceId}`,
   })
@@ -122,7 +122,7 @@ const doEdit = (picture, e) => {
 // 搜索
 const doSearch = (picture, e) => {
   e.stopPropagation()
-  window.open(`/picture/searchPicture?pictureId=${picture.id}`)
+  window.open(`/picture/searchPicture?pictureId=${picture.id}&spaceId=${picture.spaceId}`)
 }
 
 // 分享弹窗引用

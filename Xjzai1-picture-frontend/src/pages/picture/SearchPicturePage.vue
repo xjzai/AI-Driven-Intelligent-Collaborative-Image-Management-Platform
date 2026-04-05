@@ -1,7 +1,7 @@
 <template>
   <div id="searchPicturePage">
-    <h2 style="margin-bottom: 16px">以图搜图</h2>
-    <h3 style="margin: 16px 0">原图</h3>
+    <h2 style="margin-bottom: 16px">Search by Image</h2>
+    <h3 style="margin: 16px 0">Original Image</h3>
     <a-card style="width: 240px">
       <template #cover>
         <img
@@ -11,7 +11,7 @@
         />
       </template>
     </a-card>
-    <h3 style="margin: 16px 0">识图结果</h3>
+    <h3 style="margin: 16px 0">Search Results</h3>
     <!-- 图片列表 -->
     <a-list
       :grid="{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 4, xl: 5, xxl: 6 }"
@@ -45,15 +45,21 @@ const pictureId = computed(() => {
   return route.query?.pictureId
 })
 
+const spaceId = computed(() => {
+  return route.query?.spaceId
+})
+
 const picture = ref<API.PictureVO>({})
 
 // 获取老数据
 const getOldPicture = async () => {
   // 获取数据
   const id = route.query?.pictureId
+  const spaceId = route.query?.spaceId
   if (id) {
     const res = await getPictureVoByIdUsingGet({
       id: id,
+      spaceId: spaceId ?? undefined,
     })
     if (res.data.code === 0 && res.data.data) {
       const data = res.data.data
@@ -71,11 +77,12 @@ const dataList = ref<API.ImageSearchResult[]>([])
 const fetchData = async () => {
   const res = await searchPictureByPictureUsingPost({
     pictureId: pictureId.value,
+    spaceId: spaceId.value,
   })
   if (res.data.code === 0 && res.data.data) {
     dataList.value = res.data.data ?? []
   } else {
-    message.error('获取数据失败，' + res.data.message)
+    message.error('Failed to fetch data, ' + res.data.message + ', ' + res.data.description)
   }
 }
 

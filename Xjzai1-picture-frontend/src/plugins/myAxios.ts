@@ -1,9 +1,12 @@
 import axios from 'axios'
 import { message } from 'ant-design-vue'
-
+// 区分开发和生产环境
+const DEV_BASE_URL = "http://localhost:8123";
+const PROD_BASE_URL = "http://www.xjzai1.top";
 // 创建 Axios 实例
 const myAxios = axios.create({
-  baseURL: 'http://localhost:8123',
+  // baseURL: PROD_BASE_URL,
+  baseURL: DEV_BASE_URL,
   timeout: 60000,
   withCredentials: true,
 })
@@ -31,7 +34,7 @@ myAxios.interceptors.response.use(
         !response.request.responseURL.includes('user/get/login') &&
         !window.location.pathname.includes('/user/login')
       ) {
-        message.warning('请先登录')
+        message.warning('Please log in first')
         window.location.href = `/user/login?redirect=${window.location.href}`
       }
     }

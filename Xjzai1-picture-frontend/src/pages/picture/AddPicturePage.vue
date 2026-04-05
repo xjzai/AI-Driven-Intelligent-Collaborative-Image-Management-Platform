@@ -1,54 +1,76 @@
 <template>
   <div id="addPicturePage">
     <h2 style="margin-bottom: 16px">
-      {{ route.query.id ? '修改图片' : '创建图片' }}
+      {{ route.query.id ? 'Edit Picture' : 'Create Picture' }}
     </h2>
-    <a-typography-paragraph v-if="spaceId" type="secondary">
-      保存至空间：<a :href="`/space/${spaceId}`" target="_blank">{{ spaceId }}</a>
+    <a-typography-paragraph v-if="spaceId != 0" type="secondary">
+      Save to Space: <a :href="`/space/${spaceId}`" target="_blank">{{ spaceId }}</a>
     </a-typography-paragraph>
     <!-- 选择上传方式 -->
     <!-- todo 尝试实现上传大文件-->
     <a-tabs v-model:activeKey="uploadType">
-      <a-tab-pane key="file" tab="文件上传">
+      <a-tab-pane key="file" tab="File Upload">
 <!--        <PictureUpload :picture="picture" :onSuccess="onSuccess" />-->
         <PictureUpload :picture="picture" :spaceId="spaceId" :onSuccess="onSuccess" />
       </a-tab-pane>
-      <a-tab-pane key="url" tab="URL 上传" force-render>
+      <a-tab-pane key="url" tab="URL Upload" force-render>
         <UrlPictureUpload :picture="picture" :spaceId="spaceId" :onSuccess="onSuccess" />
       </a-tab-pane>
     </a-tabs>
+    <div v-if="picture" class="edit-bar">
+      <a-button :icon="h(EditOutlined)" @click="doEditPicture">Edit Picture</a-button>
+      <a-button type="primary" ghost :icon="h(FullscreenOutlined)" @click="doImagePainting">
+        AI Outpainting
+      </a-button>
+      <ImageOutPainting
+        ref="imageOutPaintingRef"
+        :picture="picture"
+        :spaceId="spaceId"
+        :onSuccess="onImageOutPaintingSuccess"
+      />
+      <ImageCropper
+        ref="imageCropperRef"
+        :imageUrl="picture?.url"
+        :picture="picture"
+        :spaceId="spaceId"
+        :space="space"
+        :onSuccess="onSuccess"
+      />
+
+
+    </div>
     <a-form v-if="picture" layout="vertical" :model="pictureForm" @finish="handleSubmit">
-      <a-form-item label="名称" name="name">
-        <a-input v-model:value="pictureForm.name" placeholder="请输入名称" />
+      <a-form-item label="Name" name="name">
+        <a-input v-model:value="pictureForm.name" placeholder="Please enter name" />
       </a-form-item>
-      <a-form-item label="简介" name="introduction">
+      <a-form-item label="Introduction" name="introduction">
         <a-textarea
           v-model:value="pictureForm.introduction"
-          placeholder="请输入简介"
+          placeholder="Please enter introduction"
           :autoSize="{ minRows: 5, maxRows: 5 }"
           allowClear
         />
       </a-form-item>
-      <a-form-item label="分类" name="category">
+      <a-form-item label="Category" name="category">
         <a-auto-complete
           v-model:value="pictureForm.category"
           :options="categoryOptions"
-          placeholder="请输入分类"
+          placeholder="Please enter category"
           allowClear
         />
       </a-form-item>
-      <a-form-item label="标签" name="tags">
+      <a-form-item label="Tags" name="tags">
         <a-select
           v-model:value="pictureForm.tags"
           :options="tagOptions"
           mode="tags"
-          placeholder="请输入标签"
+          placeholder="Please enter tags"
           allowClear
         />
       </a-form-item>
       <a-form-item>
         <a-button type="primary" html-type="submit" style="width: 100%">
-          {{ route.query.id ? '修改' : '创建' }}
+          {{ route.query.id ? 'Edit' : 'Create' }}
         </a-button>
       </a-form-item>
     </a-form>
@@ -56,7 +78,7 @@
 </template>
 <script setup lang="ts">
 import PictureUpload from '@/components/PictureUpload.vue'
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref, h, watchEffect } from 'vue'
 import {
   editPictureUsingPost,
   getPictureVoByIdUsingGet,
@@ -65,6 +87,10 @@ import {
 import { message } from 'ant-design-vue'
 import { useRoute, useRouter } from 'vue-router'
 import UrlPictureUpload from '@/components/UrlPictureUpload.vue'
+import ImageCropper from '@/components/ImageCropper.vue'
+import { EditOutlined } from '@ant-design/icons-vue'
+import { getSpaceVoByIdUsingGet } from '@/api/spaceController'
+import ImageOutPainting from '@/components/ImageOutPainting.vue'
 
 const picture = ref<API.PictureVo>()
 const pictureForm = reactive<API.PictureEditRequest>({})
@@ -98,11 +124,11 @@ const handleSubmit = async (values: any) => {
   })
   if (res.data.code === 0 && res.data.data) {
     if (route.query.id) {
-      message.success('修改成功')
+      message.success('Update successful')
       router.back()
     } else {
-      message.success('创建成功')
-      console.log(spaceId)
+      message.success('Created successfully')
+      // console.log(spaceId)
       // todo 跳转到图片详情页
       router.push({
         path: `/picture/${pictureId}/${spaceId.value ?? 0}`,
@@ -110,9 +136,9 @@ const handleSubmit = async (values: any) => {
     }
   } else {
     if (route.query.id) {
-      message.error('修改失败，' + res.data.message)
+      message.error('Update failed, ' + res.data.message + ', ' + res.data.description)
     } else {
-      message.error('创建失败，' + res.data.message)
+      message.error('Creation failed, ' + res.data.message + ', ' + res.data.description)
     }
   }
 }
@@ -138,7 +164,7 @@ const getTagCategoryOptions = async () => {
       }
     })
   } else {
-    message.error('加载选项失败，' + res.data.message)
+    message.error('Failed to load options, ' + res.data.message + ', ' + res.data.description)
   }
 }
 
@@ -148,9 +174,11 @@ const route = useRoute()
 const getOldPicture = async () => {
   // 获取数据
   const id = route.query?.id
+  const spaceId = route.query?.spaceId
   if (id) {
     const res = await getPictureVoByIdUsingGet({
       id: id,
+      spaceId: spaceId ?? undefined,
     })
     if (res.data.code === 0 && res.data.data) {
       const data = res.data.data
@@ -167,10 +195,67 @@ onMounted(() => {
   getOldPicture()
   getTagCategoryOptions()
 })
+
+// 图片编辑弹窗引用
+const imageCropperRef = ref()
+
+// 编辑图片
+const doEditPicture = () => {
+  if (imageCropperRef.value) {
+    imageCropperRef.value.openModal()
+  }
+}
+
+// 编辑成功事件
+const onCropSuccess = (newPicture: API.PictureVO) => {
+  picture.value = newPicture
+}
+
+const space = ref<API.SpaceVO>()
+
+// 获取空间信息
+const fetchSpace = async () => {
+  // 获取数据
+  if (spaceId.value) {
+    const res = await getSpaceVoByIdUsingGet({
+      id: spaceId.value,
+    })
+    if (res.data.code === 0 && res.data.data) {
+      space.value = res.data.data
+    }
+  }
+}
+
+watchEffect(() => {
+  fetchSpace()
+})
+
+// AI 扩图弹窗引用
+const imageOutPaintingRef = ref()
+
+// AI 扩图
+const doImagePainting = () => {
+  if (imageOutPaintingRef.value) {
+    imageOutPaintingRef.value.openModal()
+  }
+}
+
+// 编辑成功事件
+const onImageOutPaintingSuccess = (newPicture: API.PictureVO) => {
+  picture.value = newPicture
+}
+
+
 </script>
 <style scoped>
 #addPicturePage {
   max-width: 720px;
   margin: 0 auto;
 }
+
+#addPicturePage .edit-bar {
+  text-align: center;
+  margin: 16px 0;
+}
+
 </style>

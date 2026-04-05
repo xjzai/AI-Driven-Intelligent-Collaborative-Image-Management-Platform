@@ -4,8 +4,8 @@
       <a-col flex="200px">
         <RouterLink to="/">
           <div class="title-bar">
-            <img class="logo" src="../assets/logo.png" alt="logo" />
-            <div class="title">鱼皮云图库</div>
+            <img class="logo" src="../assets/logo.jpg" alt="logo" />
+            <div class="title">xjz Cloud Gallery</div>
           </div>
         </RouterLink>
       </a-col>
@@ -15,6 +15,7 @@
           mode="horizontal"
           :items="items"
           @click="doMenuClick"
+          class="menu"
         />
       </a-col>
       <a-col flex="120px">
@@ -26,30 +27,30 @@
                   <template #icon>
                     <img
                       :src="loginUserStore.loginUser.userAvatar ?? 'https://huacheng.gz-cmc.com/upload/news/image/2023/05/26/3e67c105f5ac4a38b45a2c7f0a40688f.jpeg'"
-                      alt="头像"
+                      alt="Avatar"
                     />
                   </template>
                 </a-avatar>
-                {{ loginUserStore.loginUser.userName ?? '无名' }}
+                {{ loginUserStore.loginUser.userName ?? 'Unnamed' }}
               </a-space>
               <template #overlay>
                 <a-menu>
                   <a-menu-item>
                     <router-link to="/user/detail">
                       <UserOutlined />
-                      个人主页
+                      Profile
                     </router-link>
                   </a-menu-item>
                   <a-menu-item @click="doLogout">
                     <LogoutOutlined />
-                    退出登录
+                    Logout
                   </a-menu-item>
                 </a-menu>
               </template>
             </a-dropdown>
           </div>
           <div v-else>
-            <a-button type="primary" href="/user/login">登录</a-button>
+            <a-button type="primary" href="/user/login">Login</a-button>
           </div>
         </div>
       </a-col>
@@ -72,34 +73,34 @@ const originItems = [
   {
     key: '/',
     icon: () => h(HomeOutlined),
-    label: '主页',
-    title: '主页',
+    label: 'Home',
+    title: 'Home',
   },
   {
     key: '/picture/addPicture',
-    label: '创建图片',
-    title: '创建图片',
+    label: 'Create Picture',
+    title: 'Create Picture',
   },
   {
     key: '/admin/userManage',
-    label: '用户管理',
-    title: '用户管理',
+    label: 'User Management',
+    title: 'User Management',
   },
   {
     key: '/admin/pictureManage',
-    label: '图片管理',
-    title: '图片管理',
+    label: 'Picture Management',
+    title: 'Picture Management',
   },
   {
     key: '/admin/spaceManage',
-    label: '空间管理',
-    title: '空间管理',
+    label: 'Space Management',
+    title: 'Space Management',
   },
-  {
-    key: 'others',
-    label: h('a', { href: 'https://www.codefather.cn', target: '_blank' }, '编程导航'),
-    title: '编程导航',
-  },
+  // {
+  //   key: 'others',
+  //   label: h('a', { href: 'http://www.xjzai1.top', target: '_blank' }, '其他网站'),
+  //   title: '其他网站',
+  // },
 ]
 
 // 过滤菜单项
@@ -121,14 +122,12 @@ const items = computed<MenuProps['items']>(() => filterMenus(originItems))
 const router = useRouter()
 
 router.beforeEach((to, from, next) => {
-  console.log('Navigating from', from.path, 'to', to.path)
   current.value = [to.path]
   next()
 })
 
 const doMenuClick = ({ key }: { key: string }) => {
   // ant-design中Menu组件的回调函数传来的值
-  console.log('Menu clicked, key:', key)
   // router.push({
   //   path: key,
   // })
@@ -137,25 +136,25 @@ const doMenuClick = ({ key }: { key: string }) => {
       path: key,
     })
     .then(() => {
-      console.log('Navigation successful')
+      // console.log('Navigation successful')
     })
     .catch((err) => {
-      console.error('Navigation failed', err)
+      // console.error('Navigation failed', err)
     })
 }
 
 // 用户注销
 const doLogout = async () => {
   const res = await userLogoutUsingPost()
-  console.log(res)
+  // console.log(res)
   if (res.data.code === 0) {
     loginUserStore.setLoginUser({
-      userName: '未登录',
+      userName: 'Logged out',
     })
-    message.success('退出登录成功')
+    message.success('Logout successful')
     await router.push('/user/login')
   } else {
-    message.error('退出登录失败，' + res.data.message)
+    message.error('Logout failed, ' + res.data.message + ', ' + res.data.description)
   }
 }
 </script>
@@ -173,5 +172,8 @@ const doLogout = async () => {
 
 .logo {
   height: 48px;
+}
+.menu {
+  //background-image: url("@/assets/background.png");
 }
 </style>
